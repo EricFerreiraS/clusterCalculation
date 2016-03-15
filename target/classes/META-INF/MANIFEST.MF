@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Class-Path: dependency-jars/postgresql-9.0-801.jdbc4.jar dependency-ja
+ rs/jts-1.13.jar
+Build-Jdk: 1.7.0_95
+Built-By: eric
+Created-By: Maven Integration for Eclipse
+Main-Class: gov.ipea.mapaosc.clusterCalculation.main
+

@@ -1,0 +1,2 @@
+# ignore web.xml because the connection info
+~/web.xml

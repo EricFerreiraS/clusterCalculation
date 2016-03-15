@@ -1,0 +1,7 @@
+gov/ipea/mapaosc/clusterCalculation/main.class
+gov/ipea/mapaosc/clusterCalculation/SimpleCluster.class
+gov/ipea/mapaosc/clusterCalculation/OscCoordinate.class
+gov/ipea/mapaosc/clusterCalculation/Coordinate.class
+gov/ipea/mapaosc/clusterCalculation/GeoCluster.class
+gov/ipea/mapaosc/clusterCalculation/BoundingBox.class
+gov/ipea/mapaosc/clusterCalculation/Cluster.class
