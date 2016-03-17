@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Built-By: b6519563
 Class-Path: dependency-jars/postgresql-9.0-801.jdbc4.jar dependency-ja
- rs/jts-1.13.jar
+ rs/jts-1.13.jar dependency-jars/gwt-geocluster-1.0.0.jar
 Build-Jdk: 1.8.0_66
 Created-By: Maven Integration for Eclipse
 Main-Class: gov.ipea.mapaosc.clusterCalculation.main

@@ -28,6 +28,11 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 
+import vhmeirelles.gwtGeocluster.model.BoundingBox;
+import vhmeirelles.gwtGeocluster.model.Coordinate;
+import vhmeirelles.gwtGeocluster.model.GeoCluster;
+import vhmeirelles.gwtGeocluster.model.SimpleCluster;
+
 public class main {
 	private static ConcurrentNavigableMap<Integer, OscCoordinate> allOscCoordinates = new ConcurrentSkipListMap<Integer, OscCoordinate>();
 	private static ConcurrentNavigableMap<Integer, OscCoordinate> activeOscCoordinates = new ConcurrentSkipListMap<Integer, OscCoordinate>();
@@ -132,7 +137,8 @@ public class main {
 		}
 	}
 
-	private static void clusterCalculation(int minClusterZoomLevel, int maxClusterZoomLevelCalc,int clusterGridSize, Connection connection) throws RemoteException, SQLException{
+	private static void clusterCalculation(int minClusterZoomLevel, int maxClusterZoomLevelCalc, int clusterGridSize,
+			Connection connection) throws RemoteException, SQLException {
 
 		if (connection != null) {
 			System.out.println("Successful connection");
@@ -154,7 +160,7 @@ public class main {
 			{
 				System.out.println(e.getMessage());
 				throw new RemoteException();
-			} 
+			}
 
 			if (!createdClusters)
 
@@ -171,7 +177,7 @@ public class main {
 				} catch (SQLException e) {
 					System.out.println(e.getMessage());
 					throw new RemoteException();
-				} 
+				}
 
 				date = new GregorianCalendar();
 				System.out.println(date.getTime() + " - Prepared DB.");
@@ -182,7 +188,6 @@ public class main {
 				rs = null;
 				String sql = "SELECT a.bosc_sq_osc, ST_AsText(a.bosc_geometry) wkt, b.inte_in_ativa FROM data.tb_osc a JOIN portal.tb_osc_interacao b ON (a.bosc_sq_osc = b.bosc_sq_osc) "
 						+ "WHERE b.inte_in_osc = true AND a.bosc_geometry is not null";
-				// logger.info(sql);
 				try {
 					pstmt = connection.prepareStatement(sql);
 					rs = pstmt.executeQuery();
@@ -214,9 +219,7 @@ public class main {
 					System.out.println(e.getMessage());
 					throw new RemoteException();
 				}
-						
-					
-				
+
 				Set<Coordinate> elements = new HashSet<Coordinate>();
 
 				BoundingBox bbox = new BoundingBox();
@@ -225,25 +228,23 @@ public class main {
 
 				date = new GregorianCalendar();
 				System.out.println(date.getTime() + " - Add all Coords...");
-				
-				
-				//ConcurrentNavigableMap<Integer, OscCoordinate> col = true ? allOscCoordinates : activeOscCoordinates;
+
+				// ConcurrentNavigableMap<Integer, OscCoordinate> col = true ?
+				// allOscCoordinates : activeOscCoordinates;
 				ConcurrentNavigableMap<Integer, OscCoordinate> col = allOscCoordinates;
 				for (OscCoordinate coord : col.values()) {
-					if (coord.getX() >= bbox.getMinX() && coord.getX() <= bbox.getMaxX() && coord.getY() >= bbox.getMinY()
-							&& coord.getY() <= bbox.getMaxY()) {
+					if (coord.getX() >= bbox.getMinX() && coord.getX() <= bbox.getMaxX()
+							&& coord.getY() >= bbox.getMinY() && coord.getY() <= bbox.getMaxY()) {
 						coords.add(coord);
 					}
 
 				}
-				
-				System.out.println(coords.size());
-				System.out.println(clusterGridSize);
+
 				for (int i = minClusterZoomLevel; i <= maxClusterZoomLevelCalc; i++) {
 					// for (int i = 4; i < 5; i++) {
 					date = new GregorianCalendar();
 					System.out.println(date.getTime() + " - Clusters calculation...");
-					
+
 					elements = geoCluster.cluster(coords, clusterGridSize, i);
 
 					date = new GregorianCalendar();
@@ -272,7 +273,7 @@ public class main {
 							} catch (SQLException e) {
 								System.out.println(e.getMessage());
 								throw new RemoteException();
-							} 
+							}
 
 						}
 
@@ -313,20 +314,5 @@ public class main {
 		}
 
 	}
-
-//	public static Set<OscCoordinate> getOSCCoordinates(BoundingBox bbox, boolean all) throws RemoteException {
-//		Set<OscCoordinate> coords = new HashSet<OscCoordinate>();
-//		ConcurrentNavigableMap<Integer, OscCoordinate> col = all ? allOscCoordinates : activeOscCoordinates;
-//		for (OscCoordinate coord : col.values()) {
-//			if (coord.getX() >= bbox.getMinX() && coord.getX() <= bbox.getMaxX() && coord.getY() >= bbox.getMinY()
-//					&& coord.getY() <= bbox.getMaxY()) {
-//				coords.add(coord);
-//			}
-//
-//		}
-//
-//		return coords;
-//
-//	}
 
 }

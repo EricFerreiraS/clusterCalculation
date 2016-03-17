@@ -93,6 +93,12 @@
 			<artifactId>jts</artifactId>
 			<version>1.13</version>
 		</dependency>
+		<dependency>
+			<groupId>com.github.vhmeirelles</groupId>
+			<artifactId>gwt-geocluster</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 	</dependencies>
+
 
 </project>

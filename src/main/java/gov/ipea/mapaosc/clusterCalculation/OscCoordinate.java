@@ -1,5 +1,7 @@
 package gov.ipea.mapaosc.clusterCalculation;
 
+import vhmeirelles.gwtGeocluster.model.Coordinate;
+
 /**
  * @author victor Coordenadas de uma OSC
  *
