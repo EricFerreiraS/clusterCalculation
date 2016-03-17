@@ -31,25 +31,25 @@ import com.vividsolutions.jts.io.WKTReader;
 public class main {
 	private static ConcurrentNavigableMap<Integer, OscCoordinate> allOscCoordinates = new ConcurrentSkipListMap<Integer, OscCoordinate>();
 	private static ConcurrentNavigableMap<Integer, OscCoordinate> activeOscCoordinates = new ConcurrentSkipListMap<Integer, OscCoordinate>();
-	private static GeoCluster geoCluster = new GeoCluster();
-	private static BoundingBox bbox = new BoundingBox();
-	private static GregorianCalendar date = new GregorianCalendar();
-	private static WKTReader reader = new WKTReader();
+	//private static GeoCluster geoCluster;
+	private static BoundingBox bbox;
+	private static GregorianCalendar date;
+	private static WKTReader reader;
+	private static String driverName = "";
+	private static String DBMS = "";
+	private static String serverName = "";
+	private static String port = "";
+	private static String databaseName = "";
+	private static String userName = "";
+	private static String password = "";
+	private static int initialClusterZoomLevel = 4;
+	private static int clusterGridSize = 100;
+	private static int minClusterZoomLevel = 4;
+	private static int maxClusterZoomLevel = 18;
+	private static int maxClusterZoomLevelCalc = 6;
 
-	public static void main(final String[] args) throws ParserConfigurationException, SAXException, IOException {
-
-		String driverName = "";
-		String DBMS = "";
-		String serverName = "";
-		String port = "";
-		String databaseName = "";
-		String userName = "";
-		String password = "";
-		int initialClusterZoomLevel = 4;
-		int clusterGridSize = 100;
-		int minClusterZoomLevel = 4;
-		int maxClusterZoomLevel = 18;
-		int maxClusterZoomLevelCalc = 6;
+	public static void main(final String[] args)
+			throws ParserConfigurationException, SAXException, IOException, SQLException {
 
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
@@ -99,16 +99,12 @@ public class main {
 		// clusterGridSize + " "
 		// + minClusterZoomLevel + " " + maxClusterZoomLevel + " " +
 		// maxClusterZoomLevelCalc + " ");
-	
-
-	clusterCalculation(driverName, DBMS, serverName, port, databaseName, userName, password,
-				minClusterZoomLevel, maxClusterZoomLevelCalc, maxClusterZoomLevelCalc);
+		Connection con = connection(driverName, DBMS, serverName, port, databaseName, userName, password);
+		clusterCalculation(minClusterZoomLevel, maxClusterZoomLevelCalc, maxClusterZoomLevelCalc, con);
 	}
 
-	private static void clusterCalculation(String driverName, String DBMS, String serverName, String port,
-			String databaseName, String userName, String password, int minClusterZoomLevel, int maxClusterZoomLevelCalc,
-			int clusterGridSize) throws RemoteException {
-
+	private static Connection connection(String driverName, String DBMS, String serverName, String port,
+			String databaseName, String userName, String password) {
 		System.out.println("-------- PostgreSQL " + "JDBC Connection Testing ------------");
 
 		try {
@@ -119,7 +115,7 @@ public class main {
 
 			System.out.println("Where is your PostgreSQL JDBC Driver? " + "Include in your library path!");
 			e.printStackTrace();
-			return;
+			return null;
 
 		}
 
@@ -131,14 +127,18 @@ public class main {
 
 			connection = DriverManager.getConnection(
 					"jdbc:" + DBMS + "://" + serverName + ":" + port + "/" + databaseName, userName, password);
+			return connection;
 
 		} catch (SQLException e) {
 
 			System.out.println("Connection Failed! Check output console");
 			e.printStackTrace();
-			return;
+			return null;
 
 		}
+	}
+
+	private static void clusterCalculation(int minClusterZoomLevel, int maxClusterZoomLevelCalc,int clusterGridSize, Connection connection) throws RemoteException, SQLException{
 
 		if (connection != null) {
 			System.out.println("Successful connection");
@@ -160,11 +160,12 @@ public class main {
 			{
 				System.out.println(e.getMessage());
 				throw new RemoteException();
-			}
+			} 
 
 			if (!createdClusters)
 
 			{
+				date = new GregorianCalendar();
 				System.out.println(date.getTime() + " - Calculation Clusters ...");
 
 				pstmt = null;
@@ -176,16 +177,11 @@ public class main {
 				} catch (SQLException e) {
 					System.out.println(e.getMessage());
 					throw new RemoteException();
-				}
+				} 
 
 				date = new GregorianCalendar();
 				System.out.println(date.getTime() + " - Prepared DB.");
 
-				Set<Coordinate> elements = new HashSet<Coordinate>();
-
-				bbox.setBounds(-121.1718766875, -45.64476785916705, 17.958982687499997, 23.966176339963845);
-				Set<Coordinate> coords = new HashSet<Coordinate>();
-				date = new GregorianCalendar();
 				System.out.println(date.getTime() + " - Add all Coords...");
 
 				pstmt = null;
@@ -202,8 +198,8 @@ public class main {
 						Boolean active = rs.getBoolean("inte_in_ativa");
 						String wkt = rs.getString("wkt");
 						if (wkt != null && !wkt.isEmpty()) {
-							reader = new WKTReader();
-							
+							WKTReader reader = new WKTReader();
+							try {
 								Point point = (Point) reader.read(wkt);
 								OscCoordinate coord = new OscCoordinate();
 								coord.setId(id);
@@ -214,25 +210,48 @@ public class main {
 									activeOscCoordinates.put(idx, coord);
 								}
 								idx++;
-							
+							} catch (ParseException e) {
+								System.out.println(e.getMessage());
+							}
 						}
 					}
 
 				} catch (SQLException e) {
 					System.out.println(e.getMessage());
 					throw new RemoteException();
-				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
+						
+					
+				
+				Set<Coordinate> elements = new HashSet<Coordinate>();
 
-				coords.addAll(getOSCCoordinates(bbox, false));
+				BoundingBox bbox = new BoundingBox();
+				bbox.setBounds(-121.1718766875, -45.64476785916705, 17.958982687499997, 23.966176339963845);
+				Set<Coordinate> coords = new HashSet<Coordinate>();
+
+				date = new GregorianCalendar();
+				System.out.println(date.getTime() + " - Add all Coords...");
+				
+				
+				ConcurrentNavigableMap<Integer, OscCoordinate> col = true ? allOscCoordinates : activeOscCoordinates;
+				for (OscCoordinate coord : col.values()) {
+					if (coord.getX() >= bbox.getMinX() && coord.getX() <= bbox.getMaxX() && coord.getY() >= bbox.getMinY()
+							&& coord.getY() <= bbox.getMaxY()) {
+						coords.add(coord);
+					}
+
+				}
+				
+				
+				//coords.addAll(getOSCCoordinates(bbox, true));
 
 				for (int i = minClusterZoomLevel; i <= maxClusterZoomLevelCalc; i++) {
+					// for (int i = 4; i < 5; i++) {
 					date = new GregorianCalendar();
 					System.out.println(date.getTime() + " - Clusters calculation...");
-
+					GeoCluster geoCluster = new GeoCluster();
 					elements = geoCluster.cluster(coords, clusterGridSize, i);
+
 					date = new GregorianCalendar();
 					System.out.println(date.getTime() + " - Insert Clusters in DB...");
 					for (Coordinate c : elements) {
@@ -256,10 +275,10 @@ public class main {
 								pstmt.setString(4, "POLYGON((" + minX + " " + minY + "," + minX + " " + maxY + ","
 										+ maxX + " " + maxY + "," + maxX + " " + minY + "," + minX + " " + minY + "))");
 								pstmt.execute();
-							} catch (SQLException e1) {
-								System.out.println(e1.getMessage());
+							} catch (SQLException e) {
+								System.out.println(e.getMessage());
 								throw new RemoteException();
-							}
+							} 
 
 						}
 
@@ -278,11 +297,18 @@ public class main {
 				} catch (SQLException e2) {
 					System.out.println(e2.getMessage());
 					throw new RemoteException();
+				} finally {
+					pstmt.close();
+					pstmt = null;
+					connection.close();
 				}
-
-			} else
 				date = new GregorianCalendar();
-			System.out.println(date.getTime() + " - Configuration table updated.");
+				System.out.println(date.getTime() + " - Configuration table updated.");
+
+			} else {
+				date = new GregorianCalendar();
+				System.out.println(date.getTime() + " - Configuration table already updated.");
+			}
 		}
 
 		else
@@ -294,19 +320,19 @@ public class main {
 
 	}
 
-	public static Set<OscCoordinate> getOSCCoordinates(BoundingBox bbox, boolean all) throws RemoteException {
-		Set<OscCoordinate> coords = new HashSet<OscCoordinate>();
-		ConcurrentNavigableMap<Integer, OscCoordinate> col = all ? allOscCoordinates : activeOscCoordinates;
-		for (OscCoordinate coord : col.values()) {
-			if (coord.getX() >= bbox.getMinX() && coord.getX() <= bbox.getMaxX() && coord.getY() >= bbox.getMinY()
-					&& coord.getY() <= bbox.getMaxY()) {
-				coords.add(coord);
-			}
-
-		}
-
-		return coords;
-
-	}
+//	public static Set<OscCoordinate> getOSCCoordinates(BoundingBox bbox, boolean all) throws RemoteException {
+//		Set<OscCoordinate> coords = new HashSet<OscCoordinate>();
+//		ConcurrentNavigableMap<Integer, OscCoordinate> col = all ? allOscCoordinates : activeOscCoordinates;
+//		for (OscCoordinate coord : col.values()) {
+//			if (coord.getX() >= bbox.getMinX() && coord.getX() <= bbox.getMaxX() && coord.getY() >= bbox.getMinY()
+//					&& coord.getY() <= bbox.getMaxY()) {
+//				coords.add(coord);
+//			}
+//
+//		}
+//
+//		return coords;
+//
+//	}
 
 }
