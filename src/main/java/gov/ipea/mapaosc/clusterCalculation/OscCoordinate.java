@@ -1,25 +1,28 @@
 package gov.ipea.mapaosc.clusterCalculation;
 
 /**
- * @author victor
- * Coordenadas de uma OSC
+ * @author victor Coordenadas de uma OSC
  *
  */
 public class OscCoordinate extends Coordinate {
-	
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -7717417398356897560L;
 	private int id;
-	
+
 	public int getId() {
 		return id;
 	}
+
 	public void setId(int id) {
 		this.id = id;
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -29,7 +32,10 @@ public class OscCoordinate extends Coordinate {
 		result = prime * result + (int) (id ^ (id >>> 32));
 		return result;
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -45,13 +51,15 @@ public class OscCoordinate extends Coordinate {
 			return false;
 		return true;
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
 		return "OscCoordinate [id=" + id + ", x=" + super.getX() + ", y=" + super.getY() + "]";
 	}
-
 
 }

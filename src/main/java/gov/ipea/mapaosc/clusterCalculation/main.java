@@ -31,22 +31,22 @@ import com.vividsolutions.jts.io.WKTReader;
 public class main {
 	private static ConcurrentNavigableMap<Integer, OscCoordinate> allOscCoordinates = new ConcurrentSkipListMap<Integer, OscCoordinate>();
 	private static ConcurrentNavigableMap<Integer, OscCoordinate> activeOscCoordinates = new ConcurrentSkipListMap<Integer, OscCoordinate>();
-	//private static GeoCluster geoCluster;
+	private static GeoCluster geoCluster = new GeoCluster();
 	private static BoundingBox bbox;
 	private static GregorianCalendar date;
 	private static WKTReader reader;
-	private static String driverName = "";
-	private static String DBMS = "";
-	private static String serverName = "";
-	private static String port = "";
-	private static String databaseName = "";
-	private static String userName = "";
-	private static String password = "";
-	private static int initialClusterZoomLevel = 4;
-	private static int clusterGridSize = 100;
-	private static int minClusterZoomLevel = 4;
-	private static int maxClusterZoomLevel = 18;
-	private static int maxClusterZoomLevelCalc = 6;
+	private static String driverName;
+	private static String DBMS;
+	private static String serverName;
+	private static String port;
+	private static String databaseName;
+	private static String userName;
+	private static String password;
+	private static int initialClusterZoomLevel;
+	private static int clusterGridSize;
+	private static int minClusterZoomLevel;
+	private static int maxClusterZoomLevel;
+	private static int maxClusterZoomLevelCalc;
 
 	public static void main(final String[] args)
 			throws ParserConfigurationException, SAXException, IOException, SQLException {
@@ -93,14 +93,8 @@ public class main {
 
 			}
 		}
-		// System.out.println(driverName + " " + DBMS + " " + serverName + " " +
-		// port + " " + databaseName + " "
-		// + userName + " " + password + " " + initialClusterZoomLevel + " " +
-		// clusterGridSize + " "
-		// + minClusterZoomLevel + " " + maxClusterZoomLevel + " " +
-		// maxClusterZoomLevelCalc + " ");
 		Connection con = connection(driverName, DBMS, serverName, port, databaseName, userName, password);
-		clusterCalculation(minClusterZoomLevel, maxClusterZoomLevelCalc, maxClusterZoomLevelCalc, con);
+		clusterCalculation(minClusterZoomLevel, maxClusterZoomLevelCalc, clusterGridSize, con);
 	}
 
 	private static Connection connection(String driverName, String DBMS, String serverName, String port,
@@ -233,7 +227,8 @@ public class main {
 				System.out.println(date.getTime() + " - Add all Coords...");
 				
 				
-				ConcurrentNavigableMap<Integer, OscCoordinate> col = true ? allOscCoordinates : activeOscCoordinates;
+				//ConcurrentNavigableMap<Integer, OscCoordinate> col = true ? allOscCoordinates : activeOscCoordinates;
+				ConcurrentNavigableMap<Integer, OscCoordinate> col = allOscCoordinates;
 				for (OscCoordinate coord : col.values()) {
 					if (coord.getX() >= bbox.getMinX() && coord.getX() <= bbox.getMaxX() && coord.getY() >= bbox.getMinY()
 							&& coord.getY() <= bbox.getMaxY()) {
@@ -242,14 +237,13 @@ public class main {
 
 				}
 				
-				
-				//coords.addAll(getOSCCoordinates(bbox, true));
-
+				System.out.println(coords.size());
+				System.out.println(clusterGridSize);
 				for (int i = minClusterZoomLevel; i <= maxClusterZoomLevelCalc; i++) {
 					// for (int i = 4; i < 5; i++) {
 					date = new GregorianCalendar();
 					System.out.println(date.getTime() + " - Clusters calculation...");
-					GeoCluster geoCluster = new GeoCluster();
+					
 					elements = geoCluster.cluster(coords, clusterGridSize, i);
 
 					date = new GregorianCalendar();
