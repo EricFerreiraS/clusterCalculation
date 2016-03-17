@@ -1,7 +1,2 @@
-/home/eric/workspace/IPEA/cluster calculation/clusterCalculation/src/main/java/gov/ipea/mapaosc/clusterCalculation/main.java
-/home/eric/workspace/IPEA/cluster calculation/clusterCalculation/src/main/java/gov/ipea/mapaosc/clusterCalculation/Coordinate.java
-/home/eric/workspace/IPEA/cluster calculation/clusterCalculation/src/main/java/gov/ipea/mapaosc/clusterCalculation/OscCoordinate.java
-/home/eric/workspace/IPEA/cluster calculation/clusterCalculation/src/main/java/gov/ipea/mapaosc/clusterCalculation/Cluster.java
-/home/eric/workspace/IPEA/cluster calculation/clusterCalculation/src/main/java/gov/ipea/mapaosc/clusterCalculation/BoundingBox.java
-/home/eric/workspace/IPEA/cluster calculation/clusterCalculation/src/main/java/gov/ipea/mapaosc/clusterCalculation/SimpleCluster.java
-/home/eric/workspace/IPEA/cluster calculation/clusterCalculation/src/main/java/gov/ipea/mapaosc/clusterCalculation/GeoCluster.java
+/home/DLIPEA/b6519563/workspace/IPEA/clusterCalculation/src/main/java/gov/ipea/mapaosc/clusterCalculation/OscCoordinate.java
+/home/DLIPEA/b6519563/workspace/IPEA/clusterCalculation/src/main/java/gov/ipea/mapaosc/clusterCalculation/main.java
