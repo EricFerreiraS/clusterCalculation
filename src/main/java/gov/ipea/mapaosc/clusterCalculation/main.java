@@ -231,7 +231,7 @@ public class main {
 
 				// ConcurrentNavigableMap<Integer, OscCoordinate> col = true ?
 				// allOscCoordinates : activeOscCoordinates;
-				ConcurrentNavigableMap<Integer, OscCoordinate> col = allOscCoordinates;
+				ConcurrentNavigableMap<Integer, OscCoordinate> col = activeOscCoordinates;
 				for (OscCoordinate coord : col.values()) {
 					if (coord.getX() >= bbox.getMinX() && coord.getX() <= bbox.getMaxX()
 							&& coord.getY() >= bbox.getMinY() && coord.getY() <= bbox.getMaxY()) {
